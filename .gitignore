@@ -1,0 +1,12 @@
+node_modules/
+.vercel/
+__tests__/
+*.test.js
+eslint.config.js
+vitest.config.js
+.husky/
+ENTERPRISE_AUDIT.md
+PRD_*.md
+TECHNICAL_DESIGN.md
+TEST_REPORT.md
+verify-product.mjs

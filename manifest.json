@@ -1,0 +1,17 @@
+{
+  "name": "LightsOn",
+  "short_name": "LightsOn",
+  "description": "上传一张照片，AI 告诉你光线怎么用最好看",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#faf8f9",
+  "theme_color": "#ff6b8a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
