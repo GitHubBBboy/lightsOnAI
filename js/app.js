@@ -32,11 +32,18 @@ const elements = {
   loadingOverlay: document.getElementById('loading-overlay'),
   historyList: document.getElementById('history-list'),
   emptyHistory: document.getElementById('empty-history'),
+  retryArea: document.getElementById('retry-area'),
+  btnRetry: document.getElementById('btn-retry'),
+  btnNewPhoto: document.getElementById('btn-new-photo'),
+  retryHint: document.getElementById('retry-hint'),
+  uploadDesc: document.querySelector('.upload-desc'),
+  uploadSupport: document.querySelector('.upload-support'),
 };
 
 let currentView = 'upload';
 let currentSuggestions = [];
 let isAnalyzing = false;
+let cachedImageData = null;
 
 function switchView(viewName) {
   for (const [name, viewEl] of Object.entries(views)) {
@@ -53,6 +60,26 @@ function showLoading(show) {
   }
 }
 
+function showRetryArea(reason) {
+  if (elements.retryArea) { elements.retryArea.classList.remove('hidden'); }
+  if (elements.btnUpload) { elements.btnUpload.classList.add('hidden'); }
+  if (elements.uploadDesc) { elements.uploadDesc.classList.add('hidden'); }
+  if (elements.uploadSupport) { elements.uploadSupport.classList.add('hidden'); }
+  if (elements.retryHint) {
+    elements.retryHint.textContent = reason === 'too_dark'
+      ? '照片太暗了，试试在明亮环境下重拍'
+      : '换个角度或光线再试试？';
+  }
+}
+
+function hideRetryArea() {
+  if (elements.retryArea) { elements.retryArea.classList.add('hidden'); }
+  if (elements.btnUpload) { elements.btnUpload.classList.remove('hidden'); }
+  if (elements.uploadDesc) { elements.uploadDesc.classList.remove('hidden'); }
+  if (elements.uploadSupport) { elements.uploadSupport.classList.remove('hidden'); }
+  cachedImageData = null;
+}
+
 async function analyzeImage(imageData) {
   if (isAnalyzing) {return;}
   isAnalyzing = true;
@@ -60,15 +87,25 @@ async function analyzeImage(imageData) {
   showLoading(true);
 
   try {
-    const faceBox = await FaceDetector.detectFace(imageData);
+    const detectResult = await FaceDetector.detectFace(imageData);
 
-    if (!faceBox) {
-      logger.warn('App', '未检测到人脸');
-      Toast.show('没找到人脸，请上传一张包含人脸的照片哦', 'warning');
+    if (!detectResult.faceBox) {
+      logger.warn('App', '未检测到人脸', { reason: detectResult.reason });
+      cachedImageData = imageData;
+      if (detectResult.reason === 'too_dark') {
+        Toast.show('照片太暗了，请在明亮环境下拍摄后重试', 'warning');
+      } else {
+        Toast.show('未检测到人脸，请上传一张包含人脸的照片哦', 'warning');
+      }
+      showRetryArea(detectResult.reason);
       showLoading(false);
       isAnalyzing = false;
       return;
     }
+
+    hideRetryArea();
+
+    const faceBox = detectResult.faceBox;
 
     const analysisResult = await LightingAnalyzer.analyze(imageData, faceBox);
 
@@ -241,6 +278,7 @@ function initEventListeners() {
     elements.fileInput.addEventListener('change', async (e) => {
       const file = e.target.files && e.target.files[0];
       if (file) {
+        hideRetryArea();
         try {
           const imageData = await ImageLoader.getImageDataFromFile(file);
           await analyzeImage(imageData);
@@ -266,6 +304,21 @@ function initEventListeners() {
 
   if (elements.btnReanalyze) {
     elements.btnReanalyze.addEventListener('click', () => switchView('upload'));
+  }
+
+  if (elements.btnRetry) {
+    elements.btnRetry.addEventListener('click', async () => {
+      if (cachedImageData && !isAnalyzing) {
+        await analyzeImage(cachedImageData);
+      }
+    });
+  }
+
+  if (elements.btnNewPhoto) {
+    elements.btnNewPhoto.addEventListener('click', () => {
+      hideRetryArea();
+      if (elements.fileInput) { elements.fileInput.click(); }
+    });
   }
 
   document.addEventListener('keydown', (e) => {

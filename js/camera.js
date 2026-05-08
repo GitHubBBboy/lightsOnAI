@@ -25,7 +25,7 @@ function getImageDataFromFile(file) {
       }
       canvasEl.width = w;
       canvasEl.height = h;
-      const ctx = canvasEl.getContext('2d');
+      const ctx = canvasEl.getContext('2d', { willReadFrequently: true });
       ctx.drawImage(img, 0, 0, w, h);
       resolve(ctx.getImageData(0, 0, w, h));
     };

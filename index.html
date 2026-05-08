@@ -6,7 +6,9 @@
   <meta name="theme-color" content="#ff6b8a" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://storage.googleapis.com https://*.vercel.app; img-src 'self' data: blob: https://*.vercel.app; connect-src 'self' https://cdn.jsdelivr.net https://storage.googleapis.com https://*.vercel.app; style-src 'self' 'unsafe-inline'; font-src 'self'; worker-src 'self' blob:;" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
   <title>LightsOn</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="manifest" href="manifest.json" />
@@ -43,6 +45,11 @@
           选择照片
         </button>
         <p class="upload-support">支持 JPG、PNG、HEIC 格式</p>
+        <div class="retry-area hidden" id="retry-area">
+          <p class="retry-hint" id="retry-hint"></p>
+          <button class="btn-retry" id="btn-retry">🔄 重试</button>
+          <button class="btn-text" id="btn-new-photo">选择其他照片</button>
+        </div>
       </div>
       <input type="file" id="file-input" accept="image/*" style="display:none" aria-label="选择图片文件" />
     </section>
@@ -88,6 +95,11 @@
       <div class="loading-spinner" aria-hidden="true"></div>
       <div class="loading-text">正在分析光线...</div>
     </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <span>v0.0.2</span>
+    </footer>
   </div>
 
   <script type="module" src="js/app.js"></script>
