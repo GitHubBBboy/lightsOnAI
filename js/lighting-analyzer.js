@@ -95,22 +95,37 @@ function analyzeSync(imageData, faceBox) {
   metrics.botBrightness = Math.round(botBrightness * 100);
 
   if (faceBrightness < 0.35 && bgBrightness > faceBrightness + 0.15) {
+    const brightnessDiff = Math.round((bgBrightness - faceBrightness) * 100);
+    const severityScore = Math.min(1, brightnessDiff / 50);
     issues.push({
       type: 'face_dark',
       label: '脸太暗了',
       severity: bgBrightness - faceBrightness > 0.3 ? 'high' : 'medium',
       detail: '人脸亮度明显低于环境，可能是背光',
+      metrics: {
+        faceBrightness: Math.round(faceBrightness * 100),
+        backgroundBrightness: Math.round(bgBrightness * 100),
+        brightnessDiff: brightnessDiff,
+        severityScore: severityScore
+      }
     });
   }
 
   if (asymmetry > 0.25) {
     const darkSide = leftBrightness < rightBrightness ? 'left' : 'right';
+    const severityScore = Math.min(1, asymmetry);
     issues.push({
       type: 'asymmetry',
       label: '脸上有阴影',
       severity: asymmetry > 0.4 ? 'high' : 'medium',
       detail: `脸一侧亮一侧暗（${darkSide === 'left' ? '左' : '右'}侧偏暗）`,
       darkSide,
+      metrics: {
+        asymmetry: Math.round(asymmetry * 100),
+        leftBrightness: Math.round(leftBrightness * 100),
+        rightBrightness: Math.round(rightBrightness * 100),
+        severityScore: severityScore
+      }
     });
   }
 
@@ -118,21 +133,34 @@ function analyzeSync(imageData, faceBox) {
   const botMidRatio = midBrightness > 0 ? botBrightness / midBrightness : 1;
 
   if (topMidRatio > 1.5 && topMidRatio > botMidRatio) {
+    const severityScore = Math.min(1, (topMidRatio - 1) / 2);
     issues.push({
       type: 'top_light',
       label: '光线方向不对',
       severity: 'medium',
       detail: '光线主要来自上方，可能是顶灯',
+      metrics: {
+        topMidRatio: Math.round(topMidRatio * 100) / 100,
+        topBrightness: Math.round(topBrightness * 100),
+        midBrightness: Math.round(midBrightness * 100),
+        severityScore: severityScore
+      }
     });
   }
 
   if (faceBrightness < 0.2) {
     if (!issues.find((i) => i.type === 'face_dark')) {
+      const severityScore = Math.min(1, (0.2 - faceBrightness) / 0.2);
       issues.push({
         type: 'low_light',
         label: '光线太暗',
         severity: 'high',
         detail: '整体环境光线不足',
+        metrics: {
+          faceBrightness: Math.round(faceBrightness * 100),
+          backgroundBrightness: Math.round(bgBrightness * 100),
+          severityScore: severityScore
+        }
       });
     }
   }
@@ -143,6 +171,11 @@ function analyzeSync(imageData, faceBox) {
       label: '光线不错',
       severity: 'none',
       detail: '光线条件良好，直接拍吧',
+      metrics: {
+        faceBrightness: Math.round(faceBrightness * 100),
+        backgroundBrightness: Math.round(bgBrightness * 100),
+        severityScore: 0
+      }
     });
   }
 

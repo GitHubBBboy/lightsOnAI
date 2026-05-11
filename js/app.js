@@ -219,10 +219,79 @@ function renderSuggestions(suggestions) {
       'aria-label': '这条建议没用',
     });
 
-    const itemEl = el('div', { className: 'suggestion-item' }, [
-      el('span', { className: 'suggestion-text', textContent: suggestion.text }),
-      el('div', { className: 'feedback-buttons' }, [helpfulBtn, notHelpfulBtn]),
-    ]);
+    const children = [];
+
+    if (suggestion.levelLabel) {
+      children.push(
+        el('div', { className: 'suggestion-level' }, [
+          el('span', { 
+            className: `level-badge level-${suggestion.level}`,
+            textContent: suggestion.levelLabel 
+          }),
+          suggestion.metadata && suggestion.metadata.difficulty ? 
+            el('span', { className: 'suggestion-meta' }, [
+              el('span', { className: 'meta-item difficulty', textContent: `难度: ${suggestion.metadata.difficulty}` }),
+              el('span', { className: 'meta-item cost', textContent: `成本: ${suggestion.metadata.cost}` })
+            ]) : null
+        ].filter(Boolean))
+      );
+    }
+
+    children.push(
+      el('span', { className: 'suggestion-text', textContent: suggestion.text })
+    );
+
+    if (suggestion.params && suggestion.params.action && suggestion.params.action.steps) {
+      const stepsChildren = [
+        el('div', { className: 'steps-title', textContent: '操作步骤：' })
+      ];
+      suggestion.params.action.steps.forEach((step, idx) => {
+        stepsChildren.push(
+          el('div', { className: 'step-item' }, [
+            el('span', { className: 'step-number', textContent: `${idx + 1}.` }),
+            el('span', { className: 'step-text', textContent: step })
+          ])
+        );
+      });
+      children.push(el('div', { className: 'suggestion-steps' }, stepsChildren));
+    }
+
+    if (suggestion.calculatedParams && suggestion.calculatedParams.position) {
+      const posChildren = [];
+      if (suggestion.calculatedParams.position.description) {
+        posChildren.push(
+          el('span', { 
+            className: 'param-item', 
+            textContent: `位置: ${suggestion.calculatedParams.position.description}` 
+          })
+        );
+      }
+      if (suggestion.calculatedParams.position.angle !== null && suggestion.calculatedParams.position.angle !== undefined) {
+        posChildren.push(
+          el('span', { 
+            className: 'param-item', 
+            textContent: `角度: ${suggestion.calculatedParams.position.angle}°` 
+          })
+        );
+      }
+      if (suggestion.calculatedParams.position.distance) {
+        posChildren.push(
+          el('span', { 
+            className: 'param-item', 
+            textContent: `距离: ${suggestion.calculatedParams.position.distance}` 
+          })
+        );
+      }
+      if (posChildren.length > 0) {
+        children.push(el('div', { className: 'suggestion-params' }, posChildren));
+      }
+    }
+
+    children.push(
+      el('div', { className: 'feedback-buttons' }, [helpfulBtn, notHelpfulBtn])
+    );
+
+    const itemEl = el('div', { className: 'suggestion-item' }, children.filter(Boolean));
     elements.suggestionList.appendChild(itemEl);
   }
 }

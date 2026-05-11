@@ -592,6 +592,102 @@ body {
   line-height: 1.6;
 }
 
+.suggestion-level {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.level-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.level-badge.level-1 {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.level-badge.level-2 {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.level-badge.level-3 {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.suggestion-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.meta-item {
+  padding: 2px 8px;
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+.suggestion-steps {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+}
+
+.steps-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.step-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.step-number {
+  color: var(--primary);
+  font-weight: 600;
+  min-width: 20px;
+}
+
+.step-text {
+  color: var(--text);
+}
+
+.suggestion-params {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f0f9ff;
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.param-item {
+  font-size: 12px;
+  color: #0369a1;
+  font-weight: 500;
+  padding: 4px 10px;
+  background: #e0f2fe;
+  border-radius: 4px;
+}
+
 .feedback-buttons {
   display: flex;
   gap: 8px;
