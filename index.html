@@ -2,103 +2,134 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#ff6b8a" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://storage.googleapis.com https://*.vercel.app; img-src 'self' data: blob: https://*.vercel.app; connect-src 'self' https://cdn.jsdelivr.net https://storage.googleapis.com https://*.vercel.app; style-src 'self' 'unsafe-inline'; font-src 'self'; worker-src 'self' blob:;" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#faf7f2" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
-  <title>LightsOn</title>
+  <title>LightsOn - AI 光线分析</title>
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="manifest" href="manifest.json" />
 </head>
 <body>
-  <div class="app-container" role="application" aria-label="LightsOn应用">
-    <!-- Header -->
-    <header class="app-header" role="banner">
-      <div class="app-logo">
-        <span class="icon" aria-hidden="true">✨</span>LightsOn
+  <div class="app-wrapper">
+    <!-- Top Navigation -->
+    <nav class="top-nav" role="navigation" aria-label="主导航">
+      <div class="nav-inner">
+        <div class="nav-brand">
+          <span class="brand-icon">✨</span>
+          <span class="brand-name" data-i18n="brand.name">LightsOn</span>
+        </div>
+        <div class="nav-links">
+          <a href="#" class="nav-link active" data-nav="home" data-i18n="nav.home">首页</a>
+          <a href="#" class="nav-link" data-nav="history" data-i18n="nav.history">历史记录</a>
+          <a href="#" class="nav-link" data-nav="about" data-i18n="nav.about">关于</a>
+        </div>
+        <div class="nav-user">
+          <button class="btn-lang-switch" id="btn-lang-switch" data-i18n="lang.switch" aria-label="Switch language">EN</button>
+          <span class="user-avatar">👤</span>
+        </div>
       </div>
-      <div class="header-actions">
-        <button class="btn-icon" id="btn-history" title="历史记录" aria-label="查看历史记录">📋</button>
-      </div>
-    </header>
+    </nav>
 
-    <!-- Upload View -->
-    <section class="view" id="view-upload" role="region" aria-label="上传照片">
-      <div class="upload-area">
-        <div class="upload-illustration" aria-hidden="true">
-          <div class="upload-icon-wrap">
-            <span class="upload-icon">📸</span>
-          </div>
-          <div class="upload-dots">
-            <span class="dot dot-1"></span>
-            <span class="dot dot-2"></span>
-            <span class="dot dot-3"></span>
-          </div>
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Hero Section -->
+      <section class="hero-section" id="section-hero">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span data-i18n="hero.badge">AI 驱动 · 智能分析</span>
         </div>
-        <h2 class="upload-title">上传一张照片</h2>
-        <p class="upload-desc">分析光线问题，告诉你怎样补光更好看</p>
-        <button class="btn-upload" id="btn-upload" aria-label="选择照片进行分析">
-          <span class="btn-upload-icon">＋</span>
-          选择照片
-        </button>
-        <p class="upload-support">支持 JPG、PNG、HEIC 格式</p>
-        <div class="retry-area hidden" id="retry-area">
-          <p class="retry-hint" id="retry-hint"></p>
-          <button class="btn-retry" id="btn-retry">🔄 重试</button>
-          <button class="btn-text" id="btn-new-photo">选择其他照片</button>
-        </div>
-      </div>
-      <input type="file" id="file-input" accept="image/*" style="display:none" aria-label="选择图片文件" />
-    </section>
+        <h1 class="hero-title">
+          <span data-i18n="hero.title">用 AI 分析照片</span><br />
+          <span class="hero-title-accent" data-i18n="hero.titleAccent">光线问题与补光建议</span>
+        </h1>
+        <p class="hero-desc" data-i18n="hero.desc">为摄影爱好者、自媒体创作者提供智能化的光线诊断与补光指导，让每一张照片都完美。</p>
+      </section>
 
-    <!-- Result View -->
-    <section class="view hidden" id="view-result" role="region" aria-label="分析结果">
-      <div class="result-content">
-        <div class="result-image-wrap">
-          <img id="result-image" alt="分析照片" />
+      <!-- Upload / Analysis Card -->
+      <section class="action-card" id="section-upload">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n="upload.title">上传照片开始分析</h2>
+          <p class="card-subtitle" data-i18n="upload.subtitle">支持 JPG、PNG、HEIC 格式</p>
         </div>
-        <div class="issue-card" role="alert" aria-live="assertive">
-          <div class="issue-icon" id="issue-icon" aria-hidden="true">🔍</div>
-          <div class="issue-info">
-            <div class="issue-label" id="issue-label"></div>
-            <div class="issue-detail" id="issue-detail"></div>
+        <div class="card-body">
+          <div class="upload-zone" id="upload-zone">
+            <div class="upload-visual">
+              <div class="upload-icon-large">📸</div>
+              <div class="upload-dots">
+                <span class="dot dot-1"></span>
+                <span class="dot dot-2"></span>
+                <span class="dot dot-3"></span>
+              </div>
+            </div>
+            <button class="btn-upload-main" id="btn-upload">
+              <span class="btn-icon-text">＋</span>
+              <span data-i18n="upload.btnSelect">选择照片</span>
+            </button>
+            <p class="upload-hint" data-i18n="upload.hint">点击或拖拽照片到此处</p>
+          </div>
+          <div class="retry-zone hidden" id="retry-zone">
+            <p class="retry-text" id="retry-text"></p>
+            <div class="retry-actions">
+              <button class="btn-retry-main" id="btn-retry" data-i18n="retry.btnRetry">🔄 重试</button>
+              <button class="btn-ghost" id="btn-new-photo" data-i18n="retry.btnNewPhoto">换一张照片</button>
+            </div>
           </div>
         </div>
-        <div class="suggestions-card">
-          <h2 class="suggestions-title" id="suggestions-title">💡 试试这样：</h2>
-          <ul class="suggestion-list" id="suggestion-list" role="list" aria-labelledby="suggestions-title"></ul>
-        </div>
-      </div>
-      <div class="result-actions">
-        <button class="btn-primary" id="btn-reanalyze" aria-label="重新上传分析">重新分析</button>
-      </div>
-    </section>
+        <input type="file" id="file-input" accept="image/*" style="display:none" />
+      </section>
 
-    <!-- History View -->
-    <section class="view hidden" id="view-history" role="region" aria-label="历史记录">
-      <div class="history-header">
-        <button class="btn-icon" id="btn-back-history" aria-label="返回首页">←</button>
-        <h2 class="history-title">历史记录</h2>
-      </div>
-      <div class="empty-state" id="empty-history" role="status">
-        <div class="icon" aria-hidden="true">📸</div>
-        <p class="text">还没有分析记录，快去上传一张照片吧～</p>
-      </div>
-      <div class="history-list hidden" id="history-list" role="list" aria-label="历史记录列表"></div>
-    </section>
+      <!-- Result Card -->
+      <section class="result-card hidden" id="section-result">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n="result.title">分析结果</h2>
+          <button class="btn-back" id="btn-back-result" data-i18n="result.btnBack">← 返回</button>
+        </div>
+        <div class="card-body">
+          <div class="result-image-area">
+            <img id="result-image" alt="分析照片" />
+          </div>
+          <div class="result-issue" role="alert" aria-live="assertive">
+            <div class="issue-icon" id="issue-icon">🔍</div>
+            <div class="issue-content">
+              <div class="issue-label" id="issue-label"></div>
+              <div class="issue-detail" id="issue-detail"></div>
+            </div>
+          </div>
+          <div class="result-suggestions">
+            <h3 class="suggestions-heading" data-i18n="result.suggestionsHeading">💡 补光建议</h3>
+            <ul class="suggestion-list" id="suggestion-list" role="list"></ul>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-primary-main" id="btn-reanalyze" data-i18n="result.btnReanalyze">重新分析</button>
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section class="history-section hidden" id="section-history">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n="history.title">历史记录</h2>
+          <button class="btn-back" id="btn-back-home" data-i18n="history.btnBack">← 返回首页</button>
+        </div>
+        <div class="card-body">
+          <div class="empty-history" id="empty-history">
+            <div class="empty-icon">📸</div>
+            <p class="empty-text" data-i18n="history.emptyText">还没有分析记录，快去上传一张照片吧</p>
+          </div>
+          <div class="history-list hidden" id="history-list" role="list"></div>
+        </div>
+      </section>
+    </main>
 
     <!-- Loading Overlay -->
-    <div class="loading-overlay hidden" id="loading-overlay" role="progressbar" aria-busy="false" aria-label="正在分析光线">
-      <div class="loading-spinner" aria-hidden="true"></div>
-      <div class="loading-text">正在分析光线...</div>
+    <div class="loading-overlay hidden" id="loading-overlay" role="progressbar" aria-busy="false">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" data-i18n="loading.text">正在分析光线...</div>
     </div>
 
     <!-- Footer -->
-    <footer class="app-footer">
-      <span>v0.0.2</span>
+    <footer class="site-footer">
+      <span data-i18n="footer">LightsOn v0.0.2 · AI 驱动的照片光线分析工具</span>
     </footer>
   </div>
 

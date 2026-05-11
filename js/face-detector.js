@@ -12,17 +12,20 @@ const MP_MAX_RETRIES = 2;
 const MP_RETRY_DELAY_MS = 1500;
 
 function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function initMediaPipe() {
-  if (mpLoaded) { return; }
-  if (mpRetryCount >= MP_MAX_RETRIES) { return; }
+  if (mpLoaded) {
+    return;
+  }
+  if (mpRetryCount >= MP_MAX_RETRIES) {
+    return;
+  }
 
   try {
-    const { FaceDetector, FilesetResolver } = await import(
-      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/vision_bundle.mjs'
-    );
+    const { FaceDetector, FilesetResolver } =
+      await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/vision_bundle.mjs');
     const vision = await FilesetResolver.forVisionTasks(
       'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm'
     );
@@ -38,7 +41,11 @@ async function initMediaPipe() {
     logger.info('FaceDetector', 'MediaPipe 初始化成功');
   } catch (e) {
     mpRetryCount++;
-    logger.warn('FaceDetector', `MediaPipe 加载失败 (${mpRetryCount}/${MP_MAX_RETRIES}):`, e.message);
+    logger.warn(
+      'FaceDetector',
+      `MediaPipe 加载失败 (${mpRetryCount}/${MP_MAX_RETRIES}):`,
+      e.message
+    );
     if (mpRetryCount < MP_MAX_RETRIES) {
       await delay(MP_RETRY_DELAY_MS);
       return initMediaPipe();
@@ -56,12 +63,22 @@ function rgbToYCbCr(r, g, b) {
 
 function isSkinPixel(r, g, b) {
   const { y, cb, cr } = rgbToYCbCr(r, g, b);
-  if (y < 20 || y > 240) { return false; }
-  if (cb < 72 || cb > 135) { return false; }
-  if (cr < 128 || cr <= cb) { return false; }
-  if (cr > 180) { return false; }
+  if (y < 20 || y > 240) {
+    return false;
+  }
+  if (cb < 72 || cb > 135) {
+    return false;
+  }
+  if (cr < 128 || cr <= cb) {
+    return false;
+  }
+  if (cr > 180) {
+    return false;
+  }
   const hue = Math.atan2(cb - 128, cr - 128);
-  if (hue < 0.35 || hue > 1.05) { return false; }
+  if (hue < 0.35 || hue > 1.05) {
+    return false;
+  }
   return true;
 }
 
@@ -83,11 +100,16 @@ function enhanceContrast(imageData) {
   const enhanced = new ImageData(width, height);
   const enhancedData = enhanced.data;
 
-  let minVal = 255, maxVal = 0;
+  let minVal = 255,
+    maxVal = 0;
   for (let i = 0; i < data.length; i += 4) {
     const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-    if (gray < minVal) { minVal = gray; }
-    if (gray > maxVal) { maxVal = gray; }
+    if (gray < minVal) {
+      minVal = gray;
+    }
+    if (gray > maxVal) {
+      maxVal = gray;
+    }
   }
 
   const range = maxVal - minVal;
@@ -134,7 +156,9 @@ function createScaledImageData(imageData, scale) {
 function downsampleImageData(imageData, maxDim) {
   const { width, height } = imageData;
   const longer = Math.max(width, height);
-  if (longer <= maxDim) { return imageData; }
+  if (longer <= maxDim) {
+    return imageData;
+  }
   const scale = maxDim / longer;
   return createScaledImageData(imageData, scale);
 }
@@ -152,17 +176,28 @@ function detectSkinRegion(imageData) {
     }
   }
 
-  let minX = width, minY = height, maxX = 0, maxY = 0;
+  let minX = width,
+    minY = height,
+    maxX = 0,
+    maxY = 0;
   let skinCount = 0;
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (skinMask[y * width + x]) {
         skinCount++;
-        if (x < minX) { minX = x; }
-        if (x > maxX) { maxX = x; }
-        if (y < minY) { minY = y; }
-        if (y > maxY) { maxY = y; }
+        if (x < minX) {
+          minX = x;
+        }
+        if (x > maxX) {
+          maxX = x;
+        }
+        if (y < minY) {
+          minY = y;
+        }
+        if (y > maxY) {
+          maxY = y;
+        }
       }
     }
   }
@@ -224,12 +259,19 @@ function skinBasedFaceDetection(imageData) {
     const scaledData = scale === 1.0 ? enhanced : createScaledImageData(enhanced, scale);
     const region = detectSkinRegion(scaledData);
     const validation = validateFaceBox(
-      region.minX, region.minY, region.maxX, region.maxY,
-      region.skinCount, region.totalPixels,
-      scaledData.width, scaledData.height
+      region.minX,
+      region.minY,
+      region.maxX,
+      region.maxY,
+      region.skinCount,
+      region.totalPixels,
+      scaledData.width,
+      scaledData.height
     );
 
-    if (!validation.valid) { continue; }
+    if (!validation.valid) {
+      continue;
+    }
 
     const skinRatio = region.skinCount / region.totalPixels;
     const boxW = region.maxX - region.minX;
