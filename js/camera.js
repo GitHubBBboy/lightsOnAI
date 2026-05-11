@@ -38,7 +38,9 @@ function getImageDataFromFile(file) {
 }
 
 function getDataURL() {
-  if (!canvasEl) {return null;}
+  if (!canvasEl) {
+    return null;
+  }
   return canvasEl.toDataURL('image/jpeg', 0.85);
 }
 

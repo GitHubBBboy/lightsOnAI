@@ -9,15 +9,21 @@ let container = null;
 let timer = null;
 
 function init() {
-  if (container) {return;}
+  if (container) {
+    return;
+  }
   container = el('div', { id: 'toast-container', 'aria-live': 'polite' });
   document.body.appendChild(container);
 }
 
 function show(message, type = 'info', duration = 3000) {
-  if (!container) {init();}
+  if (!container) {
+    init();
+  }
 
-  if (timer) {clearTimeout(timer);}
+  if (timer) {
+    clearTimeout(timer);
+  }
 
   const icons = {
     info: 'ℹ️',
@@ -26,14 +32,18 @@ function show(message, type = 'info', duration = 3000) {
     error: '❌',
   };
 
-  const toastEl = el('div', {
-    className: `toast toast-${type}`,
-    role: 'status',
-    textContent: '',
-  }, [
-    el('span', { className: 'toast-icon', textContent: icons[type] || '' }),
-    el('span', { className: 'toast-message', textContent: message }),
-  ]);
+  const toastEl = el(
+    'div',
+    {
+      className: `toast toast-${type}`,
+      role: 'status',
+      textContent: '',
+    },
+    [
+      el('span', { className: 'toast-icon', textContent: icons[type] || '' }),
+      el('span', { className: 'toast-message', textContent: message }),
+    ]
+  );
 
   container.appendChild(toastEl);
 
@@ -47,7 +57,9 @@ function show(message, type = 'info', duration = 3000) {
 }
 
 function dismissToast(toastEl) {
-  if (!toastEl || !toastEl.parentNode) {return;}
+  if (!toastEl || !toastEl.parentNode) {
+    return;
+  }
   toastEl.classList.remove('toast-show');
   toastEl.classList.add('toast-hide');
   setTimeout(() => {

@@ -10,3 +10,4 @@ PRD_*.md
 TECHNICAL_DESIGN.md
 TEST_REPORT.md
 verify-product.mjs
+debug.log

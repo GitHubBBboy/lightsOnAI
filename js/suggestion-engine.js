@@ -1,46 +1,56 @@
-/**
- * 建议规则引擎
- * 根据光线问题生成可执行建议
- */
+import i18n from './i18n.js';
+
 const rules = {
   face_dark: [
-    { text: '脸转向亮的方向', action: 'turn_to_light' },
-    { text: '往前走两步，靠近光源', action: 'move_forward' },
-    { text: '换个位置，让光照到脸上', action: 'change_position' },
+    { action: 'turn_to_light', i18nKey: 'face_dark', index: 0 },
+    { action: 'move_forward', i18nKey: 'face_dark', index: 1 },
+    { action: 'change_position', i18nKey: 'face_dark', index: 2 },
   ],
   asymmetry: {
     left: [
-      { text: '脸转向右边亮的那一侧', action: 'turn_right' },
-      { text: '身体向右转一点', action: 'rotate_right' },
-      { text: '换个位置，让光从正面来', action: 'change_position' },
+      { action: 'turn_right', i18nKey: 'asymmetry', index: 0 },
+      { action: 'rotate_right', i18nKey: 'asymmetry', index: 1 },
+      { action: 'change_position', i18nKey: 'asymmetry', index: 2 },
     ],
     right: [
-      { text: '脸转向左边亮的那一侧', action: 'turn_left' },
-      { text: '身体向左转一点', action: 'rotate_left' },
-      { text: '换个位置，让光从正面来', action: 'change_position' },
+      { action: 'turn_left', i18nKey: 'asymmetry', index: 0 },
+      { action: 'rotate_left', i18nKey: 'asymmetry', index: 1 },
+      { action: 'change_position', i18nKey: 'asymmetry', index: 2 },
     ],
   },
   top_light: [
-    { text: '换个位置，避开头顶灯光', action: 'avoid_top_light' },
-    { text: '走到窗边，用自然光', action: 'use_window_light' },
-    { text: '稍微低头，减少顶光阴影', action: 'tilt_head' },
+    { action: 'avoid_top_light', i18nKey: 'top_light', index: 0 },
+    { action: 'use_window_light', i18nKey: 'top_light', index: 1 },
+    { action: 'tilt_head', i18nKey: 'top_light', index: 2 },
   ],
   low_light: [
-    { text: '打开房间的灯', action: 'turn_on_light' },
-    { text: '走到更亮的地方拍', action: 'move_to_bright' },
-    { text: '靠近窗户用自然光', action: 'use_window_light' },
+    { action: 'turn_on_light', i18nKey: 'low_light', index: 0 },
+    { action: 'move_to_bright', i18nKey: 'low_light', index: 1 },
+    { action: 'use_window_light', i18nKey: 'low_light', index: 2 },
   ],
-  good: [
-    { text: '光线很棒！直接拍就很好看～', action: 'none' },
-  ],
+  good: [{ action: 'none', i18nKey: 'good', index: 0 }],
 };
+
+function getSuggestionText(i18nKey, index) {
+  const suggestions = i18n.t('suggestions.' + i18nKey);
+  if (Array.isArray(suggestions)) {
+    return suggestions[index] || '';
+  }
+  return '';
+}
 
 function generate(issues) {
   const suggestions = [];
 
   for (const issue of issues) {
     if (issue.type === 'good') {
-      suggestions.push(...rules.good);
+      const goodRules = rules.good;
+      for (const rule of goodRules) {
+        const text = getSuggestionText(rule.i18nKey, rule.index);
+        if (text) {
+          suggestions.push({ text, action: rule.action, issueType: issue.type });
+        }
+      }
       break;
     }
 
@@ -52,8 +62,9 @@ function generate(issues) {
     }
 
     for (const rule of issueRules) {
-      if (!suggestions.find(s => s.text === rule.text)) {
-        suggestions.push({ ...rule, issueType: issue.type });
+      const text = getSuggestionText(rule.i18nKey, rule.index);
+      if (text && !suggestions.find((s) => s.text === text)) {
+        suggestions.push({ text, action: rule.action, issueType: issue.type });
       }
     }
   }

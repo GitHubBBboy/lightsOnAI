@@ -5,7 +5,7 @@
 import logger from './logger.js';
 
 const DB_NAME = 'aibuguang_db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'history';
 const MAX_RECORDS = 50;
 
@@ -74,8 +74,8 @@ async function add(record) {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
         timestamp: Date.now(),
         thumbnail: record.thumbnail,
-        issues: record.issues.map(i => ({ type: i.type, label: i.label })),
-        suggestions: record.suggestions.map(s => ({
+        issues: record.issues.map((i) => ({ type: i.type, label: i.label })),
+        suggestions: record.suggestions.map((s) => ({
           text: s.text,
           feedback: null,
         })),
@@ -182,8 +182,8 @@ function fallbackAdd(record) {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       timestamp: Date.now(),
       thumbnail: record.thumbnail,
-      issues: record.issues.map(i => ({ type: i.type, label: i.label })),
-      suggestions: record.suggestions.map(s => ({
+      issues: record.issues.map((i) => ({ type: i.type, label: i.label })),
+      suggestions: record.suggestions.map((s) => ({
         text: s.text,
         feedback: null,
       })),
@@ -200,16 +200,131 @@ function fallbackAdd(record) {
   }
 }
 
+async function updateOverallFeedback(recordId, feedback) {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.get(recordId);
+
+      request.onsuccess = () => {
+        const record = request.result;
+        if (record) {
+          record.overallFeedback = {
+            rating: feedback.rating,
+            reasons: feedback.reasons || [],
+            timestamp: Date.now(),
+          };
+          const putRequest = store.put(record);
+          putRequest.onsuccess = () => resolve(true);
+          putRequest.onerror = () => reject(putRequest.error);
+        } else {
+          resolve(false);
+        }
+      };
+      request.onerror = () => reject(request.error);
+    });
+  } catch (e) {
+    logger.warn('HistoryDB', 'updateOverallFeedback 失败:', e.message);
+    return false;
+  }
+}
+
+async function getStats() {
+  try {
+    const records = await getAll();
+    const total = records.length;
+    let goodCount = 0;
+    let okCount = 0;
+    let badCount = 0;
+    const suggestionFeedback = {};
+
+    for (const record of records) {
+      if (record.overallFeedback) {
+        if (record.overallFeedback.rating === 'good') {
+          goodCount++;
+        } else if (record.overallFeedback.rating === 'ok') {
+          okCount++;
+        } else if (record.overallFeedback.rating === 'bad') {
+          badCount++;
+        }
+      }
+      if (record.suggestions) {
+        for (const s of record.suggestions) {
+          if (s.feedback) {
+            if (!suggestionFeedback[s.text]) {
+              suggestionFeedback[s.text] = { helpful: 0, notHelpful: 0 };
+            }
+            if (s.feedback === 'helpful') {
+              suggestionFeedback[s.text].helpful++;
+            } else {
+              suggestionFeedback[s.text].notHelpful++;
+            }
+          }
+        }
+      }
+    }
+
+    let topSuggestion = null;
+    let topScore = -1;
+    for (const [text, counts] of Object.entries(suggestionFeedback)) {
+      const score = counts.helpful - counts.notHelpful;
+      if (score > topScore) {
+        topScore = score;
+        topSuggestion = { text, ...counts };
+      }
+    }
+
+    return { total, goodCount, okCount, badCount, topSuggestion };
+  } catch (e) {
+    logger.warn('HistoryDB', 'getStats 失败:', e.message);
+    return { total: 0, goodCount: 0, okCount: 0, badCount: 0, topSuggestion: null };
+  }
+}
+
+async function exportAll() {
+  try {
+    const records = await getAll();
+    const exportData = records.map((r) => ({
+      id: r.id,
+      timestamp: r.timestamp,
+      issues: r.issues,
+      suggestions: r.suggestions,
+      overallFeedback: r.overallFeedback || null,
+    }));
+    return JSON.stringify(exportData, null, 2);
+  } catch (e) {
+    logger.warn('HistoryDB', 'exportAll 失败:', e.message);
+    return '[]';
+  }
+}
+
 function formatTime(timestamp) {
   const d = new Date(timestamp);
   const now = new Date();
   const diff = now - d;
-  if (diff < 60000) {return '刚刚';}
-  if (diff < 3600000) {return Math.floor(diff / 60000) + '分钟前';}
-  if (diff < 86400000) {return Math.floor(diff / 3600000) + '小时前';}
+  if (diff < 60000) {
+    return '刚刚';
+  }
+  if (diff < 3600000) {
+    return Math.floor(diff / 60000) + '分钟前';
+  }
+  if (diff < 86400000) {
+    return Math.floor(diff / 3600000) + '小时前';
+  }
   const month = d.getMonth() + 1;
   const day = d.getDate();
   return month + '/' + day;
 }
 
-export default { getAll, add, updateFeedback, remove, formatTime };
+export default {
+  getAll,
+  add,
+  updateFeedback,
+  updateOverallFeedback,
+  getStats,
+  exportAll,
+  remove,
+  formatTime,
+};

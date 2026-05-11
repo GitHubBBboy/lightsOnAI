@@ -27,7 +27,7 @@ const getRegionBrightness = (imageData, box) => {
   return count > 0 ? sum / count / 255 : 0;
 };
 
-self.onmessage = function(e) {
+self.onmessage = function (e) {
   const { id, imageData, faceBox } = e.data;
 
   try {
@@ -41,7 +41,10 @@ self.onmessage = function(e) {
     const fh = Math.round(faceBox.height);
 
     const faceBrightness = getRegionBrightness(imageData, {
-      x: fx, y: fy, width: fw, height: fh,
+      x: fx,
+      y: fy,
+      width: fw,
+      height: fh,
     });
     metrics.faceBrightness = Math.round(faceBrightness * 100);
 
@@ -55,7 +58,9 @@ self.onmessage = function(e) {
     let bgSum = 0;
     let bgCount = 0;
     for (const box of bgBoxes) {
-      if (box.width <= 0 || box.height <= 0) { continue; }
+      if (box.width <= 0 || box.height <= 0) {
+        continue;
+      }
       const b = getRegionBrightness(imageData, box);
       const area = box.width * box.height;
       bgSum += b * area;
@@ -65,28 +70,41 @@ self.onmessage = function(e) {
     metrics.backgroundBrightness = Math.round(bgBrightness * 100);
 
     const leftBrightness = getRegionBrightness(imageData, {
-      x: fx, y: fy, width: fw / 2, height: fh,
+      x: fx,
+      y: fy,
+      width: fw / 2,
+      height: fh,
     });
     const rightBrightness = getRegionBrightness(imageData, {
-      x: fx + fw / 2, y: fy, width: fw / 2, height: fh,
+      x: fx + fw / 2,
+      y: fy,
+      width: fw / 2,
+      height: fh,
     });
     metrics.leftBrightness = Math.round(leftBrightness * 100);
     metrics.rightBrightness = Math.round(rightBrightness * 100);
 
     const maxLR = Math.max(leftBrightness, rightBrightness);
-    const asymmetry = maxLR > 0
-      ? Math.abs(leftBrightness - rightBrightness) / maxLR
-      : 0;
+    const asymmetry = maxLR > 0 ? Math.abs(leftBrightness - rightBrightness) / maxLR : 0;
     metrics.asymmetry = Math.round(asymmetry * 100);
 
     const topBrightness = getRegionBrightness(imageData, {
-      x: fx, y: fy, width: fw, height: fh / 3,
+      x: fx,
+      y: fy,
+      width: fw,
+      height: fh / 3,
     });
     const midBrightness = getRegionBrightness(imageData, {
-      x: fx, y: fy + fh / 3, width: fw, height: fh / 3,
+      x: fx,
+      y: fy + fh / 3,
+      width: fw,
+      height: fh / 3,
     });
     const botBrightness = getRegionBrightness(imageData, {
-      x: fx, y: fy + (2 * fh) / 3, width: fw, height: fh / 3,
+      x: fx,
+      y: fy + (2 * fh) / 3,
+      width: fw,
+      height: fh / 3,
     });
     metrics.topBrightness = Math.round(topBrightness * 100);
     metrics.midBrightness = Math.round(midBrightness * 100);
@@ -125,7 +143,7 @@ self.onmessage = function(e) {
     }
 
     if (faceBrightness < 0.2) {
-      if (!issues.find(i => i.type === 'face_dark')) {
+      if (!issues.find((i) => i.type === 'face_dark')) {
         issues.push({
           type: 'low_light',
           label: '光线太暗',

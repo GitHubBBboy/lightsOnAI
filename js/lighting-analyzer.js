@@ -43,7 +43,10 @@ function analyzeSync(imageData, faceBox) {
   const fh = Math.round(faceBox.height);
 
   const faceBrightness = getRegionBrightness(imageData, {
-    x: fx, y: fy, width: fw, height: fh,
+    x: fx,
+    y: fy,
+    width: fw,
+    height: fh,
   });
   metrics.faceBrightness = Math.round(faceBrightness * 100);
 
@@ -57,7 +60,9 @@ function analyzeSync(imageData, faceBox) {
   let bgSum = 0;
   let bgCount = 0;
   for (const box of bgBoxes) {
-    if (box.width <= 0 || box.height <= 0) {continue;}
+    if (box.width <= 0 || box.height <= 0) {
+      continue;
+    }
     const b = getRegionBrightness(imageData, box);
     const area = box.width * box.height;
     bgSum += b * area;
@@ -75,9 +80,7 @@ function analyzeSync(imageData, faceBox) {
   metrics.rightBrightness = Math.round(rightBrightness * 100);
 
   const maxLR = Math.max(leftBrightness, rightBrightness);
-  const asymmetry = maxLR > 0
-    ? Math.abs(leftBrightness - rightBrightness) / maxLR
-    : 0;
+  const asymmetry = maxLR > 0 ? Math.abs(leftBrightness - rightBrightness) / maxLR : 0;
   metrics.asymmetry = Math.round(asymmetry * 100);
 
   const topBox = { x: fx, y: fy, width: fw, height: fh / 3 };
@@ -124,7 +127,7 @@ function analyzeSync(imageData, faceBox) {
   }
 
   if (faceBrightness < 0.2) {
-    if (!issues.find(i => i.type === 'face_dark')) {
+    if (!issues.find((i) => i.type === 'face_dark')) {
       issues.push({
         type: 'low_light',
         label: '光线太暗',
