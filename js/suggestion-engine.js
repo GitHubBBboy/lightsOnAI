@@ -38,7 +38,7 @@ function calculateParams(suggestion, metrics) {
 function detectScenario(imageData, faceBox) {
   const features = {
     scenario: 'selfie',
-    confidence: 0.5
+    confidence: 0.5,
   };
 
   if (!imageData || !faceBox) {
@@ -65,8 +65,7 @@ function detectScenario(imageData, faceBox) {
   const imageCenterX = imageData.width / 2;
   const imageCenterY = imageData.height / 2;
 
-  if (Math.abs(faceCenterX - imageCenterX) < imageData.width * 0.2 &&
-      faceCenterY < imageCenterY) {
+  if (Math.abs(faceCenterX - imageCenterX) < imageData.width * 0.2 && faceCenterY < imageCenterY) {
     features.confidence = Math.min(0.9, features.confidence + 0.2);
   }
 
@@ -74,7 +73,7 @@ function detectScenario(imageData, faceBox) {
 }
 
 function filterByScenario(suggestions, scenario) {
-  return suggestions.filter(s => {
+  return suggestions.filter((s) => {
     if (!s.scenario || s.scenario.length === 0) {
       return true;
     }
@@ -83,7 +82,7 @@ function filterByScenario(suggestions, scenario) {
 }
 
 function filterByConditions(suggestions, userConditions) {
-  return suggestions.filter(s => {
+  return suggestions.filter((s) => {
     if (!s.conditions) {
       return true;
     }
@@ -97,7 +96,10 @@ function filterByConditions(suggestions, userConditions) {
     if (userConditions.daytime !== undefined && s.conditions.daytime !== userConditions.daytime) {
       return false;
     }
-    if (userConditions.nighttime !== undefined && s.conditions.nighttime !== userConditions.nighttime) {
+    if (
+      userConditions.nighttime !== undefined &&
+      s.conditions.nighttime !== userConditions.nighttime
+    ) {
       return false;
     }
 
@@ -137,45 +139,60 @@ function formatSuggestion(suggestion, metrics) {
     text: getLocalizedText(suggestion.text),
     levelLabel: getLevelLabel(suggestion.level),
     metadata: {
-      difficulty: getLocalizedText(suggestion.metadata.difficulty === 'easy' ? 
-        { zh: '简单', en: 'Easy' } : 
-        suggestion.metadata.difficulty === 'medium' ? 
-        { zh: '中等', en: 'Medium' } : 
-        { zh: '困难', en: 'Hard' }),
+      difficulty: getLocalizedText(
+        suggestion.metadata.difficulty === 'easy'
+          ? { zh: '简单', en: 'Easy' }
+          : suggestion.metadata.difficulty === 'medium'
+            ? { zh: '中等', en: 'Medium' }
+            : { zh: '困难', en: 'Hard' }
+      ),
       cost: getLocalizedText(
-        suggestion.metadata.cost === 'free' ? { zh: '零成本', en: 'Free' } :
-        suggestion.metadata.cost === 'low' ? { zh: '低成本', en: 'Low cost' } :
-        suggestion.metadata.cost === 'medium' ? { zh: '中等成本', en: 'Medium cost' } :
-        { zh: '高成本', en: 'High cost' }
+        suggestion.metadata.cost === 'free'
+          ? { zh: '零成本', en: 'Free' }
+          : suggestion.metadata.cost === 'low'
+            ? { zh: '低成本', en: 'Low cost' }
+            : suggestion.metadata.cost === 'medium'
+              ? { zh: '中等成本', en: 'Medium cost' }
+              : { zh: '高成本', en: 'High cost' }
       ),
       effectiveness: suggestion.metadata.effectiveness,
-      tags: getLocalizedArray(suggestion.metadata.tags)
-    }
+      tags: getLocalizedArray(suggestion.metadata.tags),
+    },
   };
 
   if (suggestion.params) {
     formatted.params = {
-      position: suggestion.params.position ? {
-        description: getLocalizedText(suggestion.params.position.description),
-        angle: suggestion.params.position.angle,
-        distance: suggestion.params.position.distance ? getLocalizedText(suggestion.params.position.distance) : null
-      } : null,
-      action: suggestion.params.action ? {
-        description: getLocalizedText(suggestion.params.action.description),
-        steps: getLocalizedArray(suggestion.params.action.steps)
-      } : null,
-      intensity: suggestion.params.intensity
+      position: suggestion.params.position
+        ? {
+            description: getLocalizedText(suggestion.params.position.description),
+            angle: suggestion.params.position.angle,
+            distance: suggestion.params.position.distance
+              ? getLocalizedText(suggestion.params.position.distance)
+              : null,
+          }
+        : null,
+      action: suggestion.params.action
+        ? {
+            description: getLocalizedText(suggestion.params.action.description),
+            steps: getLocalizedArray(suggestion.params.action.steps),
+          }
+        : null,
+      intensity: suggestion.params.intensity,
     };
 
     const calculatedParams = calculateParams(suggestion, metrics);
     if (calculatedParams) {
       formatted.calculatedParams = {
-        position: calculatedParams.position ? {
-          description: getLocalizedText(calculatedParams.position.description),
-          angle: calculatedParams.position.angle,
-          distance: calculatedParams.position.distance ? getLocalizedText(calculatedParams.position.distance) : null
-        } : null,
-        intensity: calculatedParams.intensity
+        position: calculatedParams.position
+          ? {
+              description: getLocalizedText(calculatedParams.position.description),
+              angle: calculatedParams.position.angle,
+              distance: calculatedParams.position.distance
+                ? getLocalizedText(calculatedParams.position.distance)
+                : null,
+            }
+          : null,
+        intensity: calculatedParams.intensity,
       };
     }
   }
@@ -187,17 +204,14 @@ function getLevelLabel(level) {
   const labels = {
     1: { zh: '零成本方案', en: 'Free Solution' },
     2: { zh: '低成本方案', en: 'Low Cost Solution' },
-    3: { zh: '专业方案', en: 'Professional Solution' }
+    3: { zh: '专业方案', en: 'Professional Solution' },
   };
   const lang = i18n.getLang();
   return labels[level] ? labels[level][lang] : '';
 }
 
 function generate(issues, options = {}) {
-  const {
-    scenario = 'selfie',
-    userConditions = {}
-  } = options;
+  const { scenario = 'selfie', userConditions = {} } = options;
 
   const suggestions = [];
 
@@ -239,7 +253,7 @@ function generate(issues, options = {}) {
 
 function getSuggestionById(suggestionId) {
   for (const problemType in suggestionDatabase) {
-    const found = suggestionDatabase[problemType].find(s => s.id === suggestionId);
+    const found = suggestionDatabase[problemType].find((s) => s.id === suggestionId);
     if (found) {
       return found;
     }
@@ -251,5 +265,5 @@ export default {
   generate,
   detectScenario,
   getSuggestionById,
-  calculateParams
+  calculateParams,
 };

@@ -122,8 +122,8 @@ self.onmessage = function (e) {
           faceBrightness: Math.round(faceBrightness * 100),
           backgroundBrightness: Math.round(bgBrightness * 100),
           brightnessDiff: brightnessDiff,
-          severityScore: severityScore
-        }
+          severityScore: severityScore,
+        },
       });
     }
 
@@ -140,8 +140,8 @@ self.onmessage = function (e) {
           asymmetry: Math.round(asymmetry * 100),
           leftBrightness: Math.round(leftBrightness * 100),
           rightBrightness: Math.round(rightBrightness * 100),
-          severityScore: severityScore
-        }
+          severityScore: severityScore,
+        },
       });
     }
 
@@ -159,8 +159,8 @@ self.onmessage = function (e) {
           topMidRatio: Math.round(topMidRatio * 100) / 100,
           topBrightness: Math.round(topBrightness * 100),
           midBrightness: Math.round(midBrightness * 100),
-          severityScore: severityScore
-        }
+          severityScore: severityScore,
+        },
       });
     }
 
@@ -175,8 +175,8 @@ self.onmessage = function (e) {
           metrics: {
             faceBrightness: Math.round(faceBrightness * 100),
             backgroundBrightness: Math.round(bgBrightness * 100),
-            severityScore: severityScore
-          }
+            severityScore: severityScore,
+          },
         });
       }
     }
@@ -190,8 +190,8 @@ self.onmessage = function (e) {
         metrics: {
           faceBrightness: Math.round(faceBrightness * 100),
           backgroundBrightness: Math.round(bgBrightness * 100),
-          severityScore: 0
-        }
+          severityScore: 0,
+        },
       });
     }
 

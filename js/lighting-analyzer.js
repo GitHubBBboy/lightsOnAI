@@ -106,8 +106,8 @@ function analyzeSync(imageData, faceBox) {
         faceBrightness: Math.round(faceBrightness * 100),
         backgroundBrightness: Math.round(bgBrightness * 100),
         brightnessDiff: brightnessDiff,
-        severityScore: severityScore
-      }
+        severityScore: severityScore,
+      },
     });
   }
 
@@ -124,8 +124,8 @@ function analyzeSync(imageData, faceBox) {
         asymmetry: Math.round(asymmetry * 100),
         leftBrightness: Math.round(leftBrightness * 100),
         rightBrightness: Math.round(rightBrightness * 100),
-        severityScore: severityScore
-      }
+        severityScore: severityScore,
+      },
     });
   }
 
@@ -143,8 +143,8 @@ function analyzeSync(imageData, faceBox) {
         topMidRatio: Math.round(topMidRatio * 100) / 100,
         topBrightness: Math.round(topBrightness * 100),
         midBrightness: Math.round(midBrightness * 100),
-        severityScore: severityScore
-      }
+        severityScore: severityScore,
+      },
     });
   }
 
@@ -159,8 +159,8 @@ function analyzeSync(imageData, faceBox) {
         metrics: {
           faceBrightness: Math.round(faceBrightness * 100),
           backgroundBrightness: Math.round(bgBrightness * 100),
-          severityScore: severityScore
-        }
+          severityScore: severityScore,
+        },
       });
     }
   }
@@ -174,8 +174,8 @@ function analyzeSync(imageData, faceBox) {
       metrics: {
         faceBrightness: Math.round(faceBrightness * 100),
         backgroundBrightness: Math.round(bgBrightness * 100),
-        severityScore: 0
-      }
+        severityScore: 0,
+      },
     });
   }
 

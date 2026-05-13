@@ -36,6 +36,18 @@ const elements = {
   retryText: document.getElementById('retry-text'),
   navLinks: document.querySelectorAll('.nav-link'),
   btnLangSwitch: document.getElementById('btn-lang-switch'),
+  satisfactionCard: document.getElementById('satisfaction-card'),
+  satisfactionThanks: document.getElementById('satisfaction-thanks'),
+  reasonModal: document.getElementById('reason-modal'),
+  btnReasonSkip: document.getElementById('btn-reason-skip'),
+  btnReasonConfirm: document.getElementById('btn-reason-confirm'),
+  statsPanel: document.getElementById('stats-panel'),
+  statTotal: document.getElementById('stat-total'),
+  statGood: document.getElementById('stat-good'),
+  statOk: document.getElementById('stat-ok'),
+  statBad: document.getElementById('stat-bad'),
+  statTopSuggestion: document.getElementById('stat-top-suggestion'),
+  btnExport: document.getElementById('btn-export'),
 };
 
 let currentView = 'home';
@@ -163,7 +175,8 @@ function displayResult(issues, metrics, imageData) {
   }
 
   if (elements.issueLabel) {
-    elements.issueLabel.textContent = i18n.t('issues.' + primaryIssue.type) || primaryIssue.label || '';
+    elements.issueLabel.textContent =
+      i18n.t('issues.' + primaryIssue.type) || primaryIssue.label || '';
     elements.issueLabel.className = 'issue-label';
     if (primaryIssue.severity) {
       elements.issueLabel.classList.add('severity-' + primaryIssue.severity);
@@ -187,6 +200,7 @@ function displayResult(issues, metrics, imageData) {
   }
 
   showSection('result');
+  renderSatisfaction();
 }
 
 function renderSuggestions(suggestions) {
@@ -223,33 +237,40 @@ function renderSuggestions(suggestions) {
 
     if (suggestion.levelLabel) {
       children.push(
-        el('div', { className: 'suggestion-level' }, [
-          el('span', { 
-            className: `level-badge level-${suggestion.level}`,
-            textContent: suggestion.levelLabel 
-          }),
-          suggestion.metadata && suggestion.metadata.difficulty ? 
-            el('span', { className: 'suggestion-meta' }, [
-              el('span', { className: 'meta-item difficulty', textContent: `难度: ${suggestion.metadata.difficulty}` }),
-              el('span', { className: 'meta-item cost', textContent: `成本: ${suggestion.metadata.cost}` })
-            ]) : null
-        ].filter(Boolean))
+        el(
+          'div',
+          { className: 'suggestion-level' },
+          [
+            el('span', {
+              className: `level-badge level-${suggestion.level}`,
+              textContent: suggestion.levelLabel,
+            }),
+            suggestion.metadata && suggestion.metadata.difficulty
+              ? el('span', { className: 'suggestion-meta' }, [
+                  el('span', {
+                    className: 'meta-item difficulty',
+                    textContent: `难度: ${suggestion.metadata.difficulty}`,
+                  }),
+                  el('span', {
+                    className: 'meta-item cost',
+                    textContent: `成本: ${suggestion.metadata.cost}`,
+                  }),
+                ])
+              : null,
+          ].filter(Boolean)
+        )
       );
     }
 
-    children.push(
-      el('span', { className: 'suggestion-text', textContent: suggestion.text })
-    );
+    children.push(el('span', { className: 'suggestion-text', textContent: suggestion.text }));
 
     if (suggestion.params && suggestion.params.action && suggestion.params.action.steps) {
-      const stepsChildren = [
-        el('div', { className: 'steps-title', textContent: '操作步骤：' })
-      ];
+      const stepsChildren = [el('div', { className: 'steps-title', textContent: '操作步骤：' })];
       suggestion.params.action.steps.forEach((step, idx) => {
         stepsChildren.push(
           el('div', { className: 'step-item' }, [
             el('span', { className: 'step-number', textContent: `${idx + 1}.` }),
-            el('span', { className: 'step-text', textContent: step })
+            el('span', { className: 'step-text', textContent: step }),
           ])
         );
       });
@@ -260,25 +281,28 @@ function renderSuggestions(suggestions) {
       const posChildren = [];
       if (suggestion.calculatedParams.position.description) {
         posChildren.push(
-          el('span', { 
-            className: 'param-item', 
-            textContent: `位置: ${suggestion.calculatedParams.position.description}` 
+          el('span', {
+            className: 'param-item',
+            textContent: `位置: ${suggestion.calculatedParams.position.description}`,
           })
         );
       }
-      if (suggestion.calculatedParams.position.angle !== null && suggestion.calculatedParams.position.angle !== undefined) {
+      if (
+        suggestion.calculatedParams.position.angle !== null &&
+        suggestion.calculatedParams.position.angle !== undefined
+      ) {
         posChildren.push(
-          el('span', { 
-            className: 'param-item', 
-            textContent: `角度: ${suggestion.calculatedParams.position.angle}°` 
+          el('span', {
+            className: 'param-item',
+            textContent: `角度: ${suggestion.calculatedParams.position.angle}°`,
           })
         );
       }
       if (suggestion.calculatedParams.position.distance) {
         posChildren.push(
-          el('span', { 
-            className: 'param-item', 
-            textContent: `距离: ${suggestion.calculatedParams.position.distance}` 
+          el('span', {
+            className: 'param-item',
+            textContent: `距离: ${suggestion.calculatedParams.position.distance}`,
           })
         );
       }
@@ -287,9 +311,7 @@ function renderSuggestions(suggestions) {
       }
     }
 
-    children.push(
-      el('div', { className: 'feedback-buttons' }, [helpfulBtn, notHelpfulBtn])
-    );
+    children.push(el('div', { className: 'feedback-buttons' }, [helpfulBtn, notHelpfulBtn]));
 
     const itemEl = el('div', { className: 'suggestion-item' }, children.filter(Boolean));
     elements.suggestionList.appendChild(itemEl);
@@ -318,8 +340,140 @@ async function handleFeedback(suggestion, isHelpful) {
   }
 }
 
+function renderSatisfaction() {
+  if (!elements.satisfactionCard) {
+    return;
+  }
+  elements.satisfactionCard.classList.remove('hidden');
+  if (elements.satisfactionThanks) {
+    elements.satisfactionThanks.classList.add('hidden');
+  }
+  const optionsContainer = elements.satisfactionCard.querySelector('.satisfaction-options');
+  if (optionsContainer) {
+    optionsContainer.classList.remove('submitted');
+    const buttons = optionsContainer.querySelectorAll('.btn-satisfaction');
+    buttons.forEach((b) => b.classList.remove('selected'));
+  }
+}
+
+async function handleSatisfaction(rating) {
+  if (!currentRecordId) {
+    return;
+  }
+
+  const optionsContainer = elements.satisfactionCard.querySelector('.satisfaction-options');
+  if (optionsContainer) {
+    optionsContainer.classList.add('submitted');
+    const selectedBtn = optionsContainer.querySelector(`[data-rating="${rating}"]`);
+    if (selectedBtn) {
+      selectedBtn.classList.add('selected');
+    }
+  }
+
+  if (rating === 'bad') {
+    showReasonModal();
+  } else {
+    await HistoryModule.updateOverallFeedback(currentRecordId, { rating, reasons: [] });
+    if (elements.satisfactionThanks) {
+      elements.satisfactionThanks.classList.remove('hidden');
+    }
+    Toast.show(i18n.t('feedback.thanksToast'), 'success');
+    logger.info('App', '整体满意度已记录', { rating });
+  }
+}
+
+function showReasonModal() {
+  if (!elements.reasonModal) {
+    return;
+  }
+  elements.reasonModal.classList.remove('hidden');
+  const checkboxes = elements.reasonModal.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach((cb) => {
+    cb.checked = false;
+  });
+}
+
+function hideReasonModal() {
+  if (!elements.reasonModal) {
+    return;
+  }
+  elements.reasonModal.classList.add('hidden');
+}
+
+async function submitReasons() {
+  if (!currentRecordId) {
+    return;
+  }
+
+  const checkboxes = elements.reasonModal.querySelectorAll('input[type="checkbox"]:checked');
+  const reasons = Array.from(checkboxes).map((cb) => cb.value);
+
+  hideReasonModal();
+
+  await HistoryModule.updateOverallFeedback(currentRecordId, { rating: 'bad', reasons });
+
+  if (elements.satisfactionThanks) {
+    elements.satisfactionThanks.classList.remove('hidden');
+  }
+  Toast.show(i18n.t('feedback.improveToast'), 'success');
+  logger.info('App', '不满意原因已记录', { reasons });
+}
+
+async function renderStats() {
+  const stats = await HistoryModule.getStats();
+
+  if (elements.statTotal) {
+    elements.statTotal.textContent = stats.total;
+  }
+  if (elements.statGood) {
+    elements.statGood.textContent = stats.goodCount;
+  }
+  if (elements.statOk) {
+    elements.statOk.textContent = stats.okCount;
+  }
+  if (elements.statBad) {
+    elements.statBad.textContent = stats.badCount;
+  }
+
+  if (elements.statsPanel) {
+    elements.statsPanel.classList.toggle('hidden', stats.total === 0);
+  }
+
+  if (elements.statTopSuggestion) {
+    if (stats.topSuggestion) {
+      elements.statTopSuggestion.classList.remove('hidden');
+      elements.statTopSuggestion.innerHTML =
+        i18n.t('feedback.topSuggestion') + '<strong>' + stats.topSuggestion.text + '</strong>';
+    } else {
+      elements.statTopSuggestion.classList.add('hidden');
+    }
+  }
+}
+
+async function handleExport() {
+  try {
+    const jsonStr = await HistoryModule.exportAll();
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lightsOn-feedback-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    Toast.show(i18n.t('feedback.exportSuccess'), 'success');
+    logger.info('App', '反馈数据导出成功');
+  } catch (e) {
+    logger.error('App', '导出失败:', e.message);
+    Toast.show(i18n.t('feedback.exportFail'), 'error');
+  }
+}
+
 async function loadHistory() {
   const records = await HistoryModule.getAll();
+
+  renderStats();
 
   if (!records.length) {
     if (elements.historyList) {
@@ -342,7 +496,9 @@ async function loadHistory() {
   }
 
   for (const record of records) {
-    const issueLabels = record.issues.map((i) => i18n.t('issues.' + i.type) || i.label).filter(Boolean);
+    const issueLabels = record.issues
+      .map((i) => i18n.t('issues.' + i.type) || i.label)
+      .filter(Boolean);
     const children = [
       el('img', {
         className: 'history-thumb',
@@ -372,6 +528,26 @@ async function loadHistory() {
     ];
 
     const itemEl = el('div', { className: 'history-item' }, children);
+
+    if (record.overallFeedback) {
+      const badge = el('span', {
+        className: 'history-feedback-badge',
+        textContent:
+          record.overallFeedback.rating === 'good'
+            ? '✓'
+            : record.overallFeedback.rating === 'ok'
+              ? '~'
+              : '!',
+        title:
+          record.overallFeedback.rating === 'good'
+            ? '满意'
+            : record.overallFeedback.rating === 'ok'
+              ? '一般'
+              : '不满意',
+      });
+      itemEl.style.position = 'relative';
+      itemEl.appendChild(badge);
+    }
 
     if (elements.historyList) {
       elements.historyList.appendChild(itemEl);
@@ -467,6 +643,43 @@ function initEventListeners() {
 
   if (elements.btnLangSwitch) {
     elements.btnLangSwitch.addEventListener('click', switchLanguage);
+  }
+
+  if (elements.satisfactionCard) {
+    elements.satisfactionCard.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-satisfaction');
+      if (btn) {
+        const rating = btn.dataset.rating;
+        handleSatisfaction(rating);
+      }
+    });
+  }
+
+  if (elements.btnReasonSkip) {
+    elements.btnReasonSkip.addEventListener('click', async () => {
+      hideReasonModal();
+      await HistoryModule.updateOverallFeedback(currentRecordId, { rating: 'bad', reasons: [] });
+      if (elements.satisfactionThanks) {
+        elements.satisfactionThanks.classList.remove('hidden');
+      }
+      Toast.show(i18n.t('feedback.thanksToast'), 'success');
+    });
+  }
+
+  if (elements.btnReasonConfirm) {
+    elements.btnReasonConfirm.addEventListener('click', submitReasons);
+  }
+
+  if (elements.reasonModal) {
+    elements.reasonModal.addEventListener('click', (e) => {
+      if (e.target === elements.reasonModal) {
+        hideReasonModal();
+      }
+    });
+  }
+
+  if (elements.btnExport) {
+    elements.btnExport.addEventListener('click', handleExport);
   }
 
   document.addEventListener('keydown', (e) => {
