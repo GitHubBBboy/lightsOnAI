@@ -1,141 +1,268 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#faf7f2" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
-  <title>LightsOn - AI 光线分析</title>
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-  <div class="app-wrapper">
-    <!-- Top Navigation -->
-    <nav class="top-nav" role="navigation" aria-label="主导航">
-      <div class="nav-inner">
-        <div class="nav-brand">
-          <span class="brand-icon">✨</span>
-          <span class="brand-name" data-i18n="brand.name">LightsOn</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#faf7f2" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>"
+    />
+    <title>LightsOn - AI 光线分析</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-wrapper">
+      <!-- Top Navigation -->
+      <nav class="top-nav" role="navigation" aria-label="主导航">
+        <div class="nav-inner">
+          <div class="nav-brand">
+            <span class="brand-icon">✨</span>
+            <span class="brand-name" data-i18n="brand.name">LightsOn</span>
+          </div>
+          <div class="nav-links">
+            <a href="#" class="nav-link active" data-nav="home" data-i18n="nav.home">首页</a>
+            <a href="#" class="nav-link" data-nav="history" data-i18n="nav.history">历史记录</a>
+            <a href="#" class="nav-link" data-nav="about" data-i18n="nav.about">关于</a>
+          </div>
+          <div class="nav-user">
+            <button
+              class="btn-lang-switch"
+              id="btn-lang-switch"
+              data-i18n="lang.switch"
+              aria-label="Switch language"
+            >
+              EN
+            </button>
+            <span class="user-avatar">👤</span>
+          </div>
         </div>
-        <div class="nav-links">
-          <a href="#" class="nav-link active" data-nav="home" data-i18n="nav.home">首页</a>
-          <a href="#" class="nav-link" data-nav="history" data-i18n="nav.history">历史记录</a>
-          <a href="#" class="nav-link" data-nav="about" data-i18n="nav.about">关于</a>
-        </div>
-        <div class="nav-user">
-          <button class="btn-lang-switch" id="btn-lang-switch" data-i18n="lang.switch" aria-label="Switch language">EN</button>
-          <span class="user-avatar">👤</span>
-        </div>
-      </div>
-    </nav>
+      </nav>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <!-- Hero Section -->
-      <section class="hero-section" id="section-hero">
-        <div class="hero-badge">
-          <span class="badge-dot"></span>
-          <span data-i18n="hero.badge">AI 驱动 · 智能分析</span>
-        </div>
-        <h1 class="hero-title">
-          <span data-i18n="hero.title">用 AI 分析照片</span><br />
-          <span class="hero-title-accent" data-i18n="hero.titleAccent">光线问题与补光建议</span>
-        </h1>
-        <p class="hero-desc" data-i18n="hero.desc">为摄影爱好者、自媒体创作者提供智能化的光线诊断与补光指导，让每一张照片都完美。</p>
-      </section>
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section" id="section-hero">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            <span data-i18n="hero.badge">AI 驱动 · 智能分析</span>
+          </div>
+          <h1 class="hero-title">
+            <span data-i18n="hero.title">用 Agent 助你拍下</span><br />
+            <span class="hero-title-accent" data-i18n="hero.titleAccent">美好瞬间</span>
+          </h1>
+          <p class="hero-desc" data-i18n="hero.desc">
+            为摄影爱好者、自媒体创作者提供智能化的光线诊断与补光指导，让每一张照片都完美。
+          </p>
+        </section>
 
-      <!-- Upload / Analysis Card -->
-      <section class="action-card" id="section-upload">
-        <div class="card-header">
-          <h2 class="card-title" data-i18n="upload.title">上传照片开始分析</h2>
-          <p class="card-subtitle" data-i18n="upload.subtitle">支持 JPG、PNG、HEIC 格式</p>
-        </div>
-        <div class="card-body">
-          <div class="upload-zone" id="upload-zone">
-            <div class="upload-visual">
-              <div class="upload-icon-large">📸</div>
-              <div class="upload-dots">
-                <span class="dot dot-1"></span>
-                <span class="dot dot-2"></span>
-                <span class="dot dot-3"></span>
+        <!-- Upload / Analysis Card -->
+        <section class="action-card" id="section-upload">
+          <div class="card-header">
+            <h2 class="card-title" data-i18n="upload.title">上传照片开始分析</h2>
+            <p class="card-subtitle" data-i18n="upload.subtitle">支持 JPG、PNG、HEIC 格式</p>
+          </div>
+          <div class="card-body">
+            <div class="upload-zone" id="upload-zone">
+              <div class="upload-visual">
+                <div class="upload-icon-large">📸</div>
+                <div class="upload-dots">
+                  <span class="dot dot-1"></span>
+                  <span class="dot dot-2"></span>
+                  <span class="dot dot-3"></span>
+                </div>
+              </div>
+              <button class="btn-upload-main" id="btn-upload">
+                <span class="btn-icon-text">＋</span>
+                <span data-i18n="upload.btnSelect">选择照片</span>
+              </button>
+              <p class="upload-hint" data-i18n="upload.hint">点击或拖拽照片到此处</p>
+            </div>
+            <div class="retry-zone hidden" id="retry-zone">
+              <p class="retry-text" id="retry-text"></p>
+              <div class="retry-actions">
+                <button class="btn-retry-main" id="btn-retry" data-i18n="retry.btnRetry">
+                  🔄 重试
+                </button>
+                <button class="btn-ghost" id="btn-new-photo" data-i18n="retry.btnNewPhoto">
+                  换一张照片
+                </button>
               </div>
             </div>
-            <button class="btn-upload-main" id="btn-upload">
-              <span class="btn-icon-text">＋</span>
-              <span data-i18n="upload.btnSelect">选择照片</span>
+          </div>
+          <input type="file" id="file-input" accept="image/*" style="display: none" />
+        </section>
+
+        <!-- Result Card -->
+        <section class="result-card hidden" id="section-result">
+          <div class="card-header">
+            <h2 class="card-title" data-i18n="result.title">分析结果</h2>
+            <button class="btn-back" id="btn-back-result" data-i18n="result.btnBack">← 返回</button>
+          </div>
+          <div class="card-body">
+            <div class="result-image-area">
+              <img id="result-image" alt="分析照片" />
+            </div>
+            <div class="result-issue" role="alert" aria-live="assertive">
+              <div class="issue-icon" id="issue-icon">🔍</div>
+              <div class="issue-content">
+                <div class="issue-label" id="issue-label"></div>
+                <div class="issue-detail" id="issue-detail"></div>
+              </div>
+            </div>
+            <div class="result-suggestions">
+              <h3 class="suggestions-heading" data-i18n="result.suggestionsHeading">💡 补光建议</h3>
+              <ul class="suggestion-list" id="suggestion-list" role="list"></ul>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-primary-main" id="btn-reanalyze" data-i18n="result.btnReanalyze">
+              重新分析
             </button>
-            <p class="upload-hint" data-i18n="upload.hint">点击或拖拽照片到此处</p>
           </div>
-          <div class="retry-zone hidden" id="retry-zone">
-            <p class="retry-text" id="retry-text"></p>
-            <div class="retry-actions">
-              <button class="btn-retry-main" id="btn-retry" data-i18n="retry.btnRetry">🔄 重试</button>
-              <button class="btn-ghost" id="btn-new-photo" data-i18n="retry.btnNewPhoto">换一张照片</button>
+
+          <div class="satisfaction-card hidden" id="satisfaction-card">
+            <p class="satisfaction-question" data-i18n="feedback.satisfactionQuestion">
+              这次分析准吗？
+            </p>
+            <div class="satisfaction-options">
+              <button class="btn-satisfaction" data-rating="good" aria-label="准确">
+                <span class="satisfaction-emoji">😊</span>
+                <span class="satisfaction-label" data-i18n="feedback.accurate">准确</span>
+              </button>
+              <button class="btn-satisfaction" data-rating="ok" aria-label="一般">
+                <span class="satisfaction-emoji">😐</span>
+                <span class="satisfaction-label" data-i18n="feedback.ok">一般</span>
+              </button>
+              <button class="btn-satisfaction" data-rating="bad" aria-label="不准">
+                <span class="satisfaction-emoji">☹️</span>
+                <span class="satisfaction-label" data-i18n="feedback.inaccurate">不准</span>
+              </button>
+            </div>
+            <p
+              class="satisfaction-thanks hidden"
+              id="satisfaction-thanks"
+              data-i18n="feedback.thanks"
+            >
+              感谢反馈！❤️
+            </p>
+          </div>
+        </section>
+
+        <!-- Reason Modal -->
+        <div
+          class="modal-overlay hidden"
+          id="reason-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="选择不准的原因"
+        >
+          <div class="modal-content">
+            <p class="modal-title" data-i18n="feedback.reasonTitle">哪里不准？</p>
+            <p class="modal-subtitle" data-i18n="feedback.reasonSubtitle">
+              帮我们改进分析效果（可多选）
+            </p>
+            <div class="reason-options" id="reason-options">
+              <label class="reason-option">
+                <input type="checkbox" value="lighting_wrong" />
+                <span data-i18n="feedback.reasonLighting">光线问题判断不对</span>
+              </label>
+              <label class="reason-option">
+                <input type="checkbox" value="suggestion_useless" />
+                <span data-i18n="feedback.reasonSuggestion">建议不实用</span>
+              </label>
+              <label class="reason-option">
+                <input type="checkbox" value="face_not_detected" />
+                <span data-i18n="feedback.reasonFace">人脸没检测到</span>
+              </label>
+              <label class="reason-option">
+                <input type="checkbox" value="other" />
+                <span data-i18n="feedback.reasonOther">其他</span>
+              </label>
+            </div>
+            <div class="modal-actions">
+              <button class="btn-modal-cancel" id="btn-reason-skip" data-i18n="feedback.skip">
+                跳过
+              </button>
+              <button
+                class="btn-modal-confirm"
+                id="btn-reason-confirm"
+                data-i18n="feedback.confirm"
+              >
+                确认
+              </button>
             </div>
           </div>
         </div>
-        <input type="file" id="file-input" accept="image/*" style="display:none" />
-      </section>
 
-      <!-- Result Card -->
-      <section class="result-card hidden" id="section-result">
-        <div class="card-header">
-          <h2 class="card-title" data-i18n="result.title">分析结果</h2>
-          <button class="btn-back" id="btn-back-result" data-i18n="result.btnBack">← 返回</button>
-        </div>
-        <div class="card-body">
-          <div class="result-image-area">
-            <img id="result-image" alt="分析照片" />
-          </div>
-          <div class="result-issue" role="alert" aria-live="assertive">
-            <div class="issue-icon" id="issue-icon">🔍</div>
-            <div class="issue-content">
-              <div class="issue-label" id="issue-label"></div>
-              <div class="issue-detail" id="issue-detail"></div>
+        <!-- History Section -->
+        <section class="history-section hidden" id="section-history">
+          <div class="card-header">
+            <h2 class="card-title" data-i18n="history.title">历史记录</h2>
+            <div class="history-header-actions">
+              <button
+                class="btn-export"
+                id="btn-export"
+                title="导出反馈数据"
+                aria-label="导出反馈数据"
+                data-i18n="feedback.export"
+              >
+                📤 导出
+              </button>
+              <button class="btn-back" id="btn-back-home" data-i18n="history.btnBack">
+                ← 返回首页
+              </button>
             </div>
           </div>
-          <div class="result-suggestions">
-            <h3 class="suggestions-heading" data-i18n="result.suggestionsHeading">💡 补光建议</h3>
-            <ul class="suggestion-list" id="suggestion-list" role="list"></ul>
+          <div class="stats-panel hidden" id="stats-panel">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-value" id="stat-total">0</span>
+                <span class="stat-label" data-i18n="feedback.statTotal">总分析</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value" id="stat-good">0</span>
+                <span class="stat-label">😊 <span data-i18n="feedback.statGood">满意</span></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value" id="stat-ok">0</span>
+                <span class="stat-label">😐 <span data-i18n="feedback.statOk">一般</span></span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value" id="stat-bad">0</span>
+                <span class="stat-label">☹️ <span data-i18n="feedback.statBad">不满意</span></span>
+              </div>
+            </div>
+            <div class="stat-top-suggestion hidden" id="stat-top-suggestion"></div>
           </div>
-        </div>
-        <div class="card-footer">
-          <button class="btn-primary-main" id="btn-reanalyze" data-i18n="result.btnReanalyze">重新分析</button>
-        </div>
-      </section>
-
-      <!-- History Section -->
-      <section class="history-section hidden" id="section-history">
-        <div class="card-header">
-          <h2 class="card-title" data-i18n="history.title">历史记录</h2>
-          <button class="btn-back" id="btn-back-home" data-i18n="history.btnBack">← 返回首页</button>
-        </div>
-        <div class="card-body">
-          <div class="empty-history" id="empty-history">
-            <div class="empty-icon">📸</div>
-            <p class="empty-text" data-i18n="history.emptyText">还没有分析记录，快去上传一张照片吧</p>
+          <div class="card-body">
+            <div class="empty-history" id="empty-history">
+              <div class="empty-icon">📸</div>
+              <p class="empty-text" data-i18n="history.emptyText">
+                还没有分析记录，快去上传一张照片吧
+              </p>
+            </div>
+            <div class="history-list hidden" id="history-list" role="list"></div>
           </div>
-          <div class="history-list hidden" id="history-list" role="list"></div>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay hidden" id="loading-overlay" role="progressbar" aria-busy="false">
-      <div class="loading-spinner"></div>
-      <div class="loading-text" data-i18n="loading.text">正在分析光线...</div>
+      <!-- Loading Overlay -->
+      <div class="loading-overlay hidden" id="loading-overlay" role="progressbar" aria-busy="false">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" data-i18n="loading.text">正在分析光线...</div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <span data-i18n="footer">LightsOn v0.0.4 · AI 驱动的照片光线分析工具</span>
+      </footer>
     </div>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-      <span data-i18n="footer">LightsOn v0.0.3 · AI 驱动的照片光线分析工具</span>
-    </footer>
-  </div>
-
-  <script type="module" src="js/app.js"></script>
-</body>
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>
